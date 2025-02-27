@@ -1,4 +1,4 @@
-# Event Booking App
+# Event Booking System
 
 This is an event booking application that allows users to book seats for events, view upcoming and past bookings, and more. The application is built with the following technologies:
 
@@ -34,7 +34,7 @@ This is an event booking application that allows users to book seats for events,
 ### Frontend (Web App)
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/new-project-name.git
+    git clone https://github.com/chandanlog/event-booking-system.git
     ```
 2. Navigate to the frontend directory:
     ```bash
