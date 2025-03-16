@@ -1,84 +1,139 @@
-# Event Booking System
+EVENT-BOOKING-SYSTEM 🎟️
+A complete event booking application
 
-This is an event booking application that allows users to book seats for events, view upcoming and past bookings, and more. The application is built with the following technologies:
+Technologies Used
+Frontend: Next.js
+Backend: NestJS, MySQL
+Mobile App: React Native (Expo)
+Authentication: OTP-based login
+Features 🚀
+Web App
+✅ User login & registration
+✅ View upcoming & past bookings
+✅ Book individual seats for events
+✅ Admins can manage events & bookings
+✅ Organizations can book multiple seats with verification
 
-- **Frontend**: Next.js
-- **Backend**: NestJS, MySQL
-- **Mobile App**: React Native (Expo)
-- **Authentication**: OTP-based login
+Mobile App
+📌 QR code scanning for event entry
+📌 Users receive a PDF ticket with a QR code
 
-## Features
+Admin Portal
+🔹 Admins can approve events
+🔹 Manage seat availability
 
-### Web App
-- Users can log in and sign up.
-- Users can view upcoming and past bookings.
-- Users can book individual seats for events.
-- Admins can manage events and bookings.
-- Organizations can book multiple seats with verification.
+Setup and Installation 🛠️
+1️⃣ Prerequisites
+Ensure you have the following installed:
+✔️ Node.js (for frontend & backend)
+✔️ MySQL (for database)
+✔️ Expo CLI (for mobile app)
 
-### Mobile App
-- QR code scanning for event entry.
-- Users receive a PDF with a QR code for easy event access.
+2️⃣ Frontend (Web App) Setup
+sh
+Copy
+Edit
+# Clone the repository
+git clone https://github.com/chandanlog/EVENT-BOOKING-SYSTEM.git
 
-### Admin Portal
-- Admins can approve events.
-- Admins can manage seat availability.
+# Navigate to frontend directory
+cd frontend
 
-## Setup and Installation
+# Install dependencies
+npm install
 
-### Prerequisites
-- Node.js (for frontend and backend)
-- MySQL (for database)
-- Expo (for mobile app)
+# Run the development server
+npm run dev
+The web app will be available at http://localhost:3000
 
-### Frontend (Web App)
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/chandanlog/event-booking-system.git
-    ```
-2. Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
-3. Install dependencies:
-    ```bash
-    npm install
-    ```
-4. Run the development server:
-    ```bash
-    npm run dev
-    ```
+3️⃣ Backend (API) Setup
+sh
+Copy
+Edit
+# Navigate to backend directory
+cd backend
 
-### Backend (API)
-1. Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
-3. Set up your MySQL database and configure the `.env` file with your database connection settings.
-4. Run the server:
-    ```bash
-    npm run start
-    ```
+# Install dependencies
+npm install
 
-### Mobile App (React Native)
-1. Navigate to the mobile app directory:
-    ```bash
-    cd EventBookingApp
-    ```
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
-3. Run the app using Expo:
-    ```bash
-    expo start
-    ```
+# Configure MySQL database in the .env file
+# Example .env
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=yourpassword
+DB_NAME=event_booking
 
-## Deployment
+# Start the backend server
+npm run start
+The backend will run at http://localhost:5000
 
-1. For deployment, you can deploy the web app using Vercel or Netlify, and the mobile app can be deployed using Expo or React Native CLI.
-2. Use services like Heroku, Azure, or AWS for deploying the backend API.
+4️⃣ Mobile App (React Native) Setup
+sh
+Copy
+Edit
+# Navigate to mobile app directory
+cd EventBookingApp
+
+# Install dependencies
+npm install
+
+# Run the app using Expo
+expo start
+Scan the QR code with an Expo app or use an emulator.
+
+Deployment 🚀
+1️⃣ Deploying the Frontend on GitHub Pages
+Update next.config.js (inside frontend/ directory)
+js
+Copy
+Edit
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "export",
+  basePath: "/EVENT-BOOKING-SYSTEM", // Your repo name
+  assetPrefix: "/EVENT-BOOKING-SYSTEM/",
+  images: { unoptimized: true },
+  eslint: { ignoreDuringBuilds: true },
+};
+
+module.exports = nextConfig;
+Build & Deploy
+sh
+Copy
+Edit
+cd frontend
+npm install
+npm run build
+npm run export
+npm run deploy
+Your site will be live at:
+➡️ https://chandanlog.github.io/EVENT-BOOKING-SYSTEM/
+
+2️⃣ Deploying the Backend on Heroku / AWS / Azure
+Use Heroku, AWS, or Railway to deploy the NestJS backend. Example for Heroku:
+
+sh
+Copy
+Edit
+# Login to Heroku
+heroku login
+
+# Create a Heroku app
+heroku create event-booking-backend
+
+# Push the backend to Heroku
+git push heroku main
+
+# Set environment variables
+heroku config:set DB_HOST=your_db_host DB_USER=root DB_PASS=yourpassword DB_NAME=event_booking
+
+# Open the live backend URL
+heroku open
+Contributing 🤝
+Contributions are welcome! Follow these steps:
+
+Fork the repository
+Create a new branch (git checkout -b feature-branch)
+Commit your changes (git commit -m "Added new feature")
+Push to your fork (git push origin feature-branch)
+Open a Pull Request
