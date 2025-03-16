@@ -1,0 +1,8 @@
+{
+  "display": "standalone",
+  "lang": "en",
+  "name": "Event Booking System",
+  "short_name": "Event Booking System",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait"
+}
