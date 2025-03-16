@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "EventBookingSystem",
+    "name": "Event Booking System",
     "slug": "EventBookingSystem",
     "version": "1.0.0",
     "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
     "icon": "./assets/images/icon.png",
     "scheme": "eventbookingsystem",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -18,10 +18,14 @@
       }
     },
     "web": {
-      "bundler": "metro",
       "output": "static",
-      "publicPath": "/EventBookingSystem/",  
+      "publicPath": "/EventBookingSystem/",
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "router": {
+        "origin": "/EventBookingSystem/"
+      }
     },
     "plugins": [
       "expo-router",
@@ -34,9 +38,6 @@
           "backgroundColor": "#ffffff"
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }
