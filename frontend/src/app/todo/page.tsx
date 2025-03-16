@@ -1,138 +1,188 @@
-"use client";
+"use client"
+import { useState, useEffect } from 'react';
+import { TextField, Button, Typography, Modal, Box, IconButton, List, ListItem, ListItemText, Snackbar, Card, CardContent, CardActions } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-import { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  Typography,
-  Box,
-} from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
-import { motion } from "framer-motion";
+const API_URL = 'http://192.168.1.10:4000/todos'; // Replace with your API
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
-export default function TodoApp() {
+export default function Home() {
   const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [editingTask, setEditingTask] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertOpen, setAlertOpen] = useState(false);
 
-  // Fetch tasks from backend
   useEffect(() => {
     fetchTodos();
   }, []);
 
   const fetchTodos = async () => {
     try {
-      const response = await axios.get(`${API_URL}/todos`);
-      setTasks(Array.isArray(response.data) ? response.data : []);
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setTasks(data);
     } catch (error) {
-      console.error("Error fetching tasks:", error.response?.data || error.message);
+      setAlertMessage('Failed to fetch tasks');
+      setAlertOpen(true);
     }
   };
 
-  // Add or edit a task
-  const handleSubmit = async () => {
+  const addOrEditTask = async () => {
     if (!input.trim()) return;
-    
+
     try {
-      let response;
       if (editingTask) {
-        response = await axios.put(`${API_URL}/todos/${editingTask.id}`, { title: input });
-        setTasks(tasks.map((task) => (task.id === editingTask.id ? response.data : task)));
+        await fetch(`${API_URL}/${editingTask.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: input }),
+        });
+        setTasks(tasks.map((task) => (task.id === editingTask.id ? { ...task, title: input } : task)));
+        setEditingTask(null);
       } else {
-        response = await axios.post(`${API_URL}/todos`, { title: input });
-        setTasks([...tasks, response.data]);
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: input }),
+        });
+        const newTask = await response.json();
+        setTasks([...tasks, newTask]);
       }
-      setEditingTask(null);
-      setInput("");
+      setInput('');
     } catch (error) {
-      console.error("Error saving task:", error.response?.data || error.message);
+      setAlertMessage('Failed to save task');
+      setAlertOpen(true);
     }
   };
 
-  // Delete a task
-  const deleteTask = async (id) => {
+  const openDeleteModal = (task) => {
+    setTaskToDelete(task);
+    setModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setTaskToDelete(null);
+    setModalOpen(false);
+  };
+
+  const confirmDeleteTask = async () => {
     try {
-      await axios.delete(`${API_URL}/todos/${id}`);
-      setTasks(tasks.filter((task) => task.id !== id));
+      await fetch(`${API_URL}/${taskToDelete.id}`, { method: 'DELETE' });
+      setTasks(tasks.filter((task) => task.id !== taskToDelete.id));
+      closeDeleteModal();
     } catch (error) {
-      console.error("Error deleting task:", error.response?.data || error.message);
+      setAlertMessage('Failed to delete task');
+      setAlertOpen(true);
     }
   };
 
-  // Set task for editing
-  const editTask = (task) => {
-    setEditingTask(task);
+  const startEditing = (task) => {
     setInput(task.title);
+    setEditingTask(task);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "#ffffff",
-        p: 3,
-      }}
-    >
-      <Card sx={{ width: "100%", maxWidth: 500, boxShadow: 4, p: 3, borderRadius: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ textAlign: "center", fontWeight: "bold" }}>
+    <Box sx={{
+      padding: 3, backgroundColor: '#171a1d', minHeight: '100vh',
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+    }}>
+      <Box sx={{ maxWidth: 600, width: '100%' }}>
+        <Typography variant="h4" color="success.main" textAlign="center" gutterBottom>
           Todo App
         </Typography>
-        <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-          <TextField
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Add a new task..."
-            fullWidth
-            variant="outlined"
-            sx={{ bgcolor: "#f8f9fa", borderRadius: "8px" }}
-          />
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            sx={{ fontWeight: "bold" }}
-          >
-            {editingTask ? "Update" : "Add"}
-          </Button>
-        </Box>
-        <Box>
-          {tasks.map((task) => (
-            <motion.div key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Card
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  p: 2,
-                  bgcolor: "#f8f9fa",
-                  mb: 2,
-                }}
-              >
-                <CardContent sx={{ flex: 1 }}>
-                  <Typography>{task.title}</Typography>
+
+        <Card sx={{
+          backgroundColor: '#2c353d', padding: 3, borderRadius: 2, boxShadow: 3
+        }}>
+          <CardContent>
+            <TextField
+              fullWidth
+              label="Enter Task"
+              variant="outlined"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              sx={{
+                backgroundColor: '#1f262e', marginBottom: 2, color: '#fff',
+                '& .MuiInputBase-root': { color: '#fff' },
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+              }}
+              InputLabelProps={{
+                style: { color: '#fff' } // Label color set to white
+              }}
+              InputProps={{
+                style: { color: '#fff' }
+              }}
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              onClick={addOrEditTask}
+              sx={{
+                marginBottom: 2, backgroundColor: '#4CAF50', '&:hover': { backgroundColor: '#45a049' }
+              }}
+            >
+              {editingTask ? '✏️ Update Task' : '➕ Add Task'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Box sx={{ marginTop: 3 }}>
+          <List>
+            {tasks.map((task) => (
+              <Card sx={{
+                marginBottom: 2, backgroundColor: '#2c353d', borderRadius: 2, boxShadow: 3
+              }} key={task.id}>
+                <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <ListItemText
+                    primary={task.title}
+                    primaryTypographyProps={{ style: { color: '#fff' } }}
+                  />
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton onClick={() => startEditing(task)} sx={{ color: '#1BA94C' }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => openDeleteModal(task)} sx={{ color: '#FF5252' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </CardContent>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton onClick={() => editTask(task)} sx={{ color: "#f39c12" }}>
-                    <Edit fontSize="large" />
-                  </IconButton>
-                  <IconButton onClick={() => deleteTask(task.id)} sx={{ color: "#dc3545" }}>
-                    <Delete fontSize="large" />
-                  </IconButton>
-                </Box>
               </Card>
-            </motion.div>
-          ))}
+            ))}
+          </List>
         </Box>
-      </Card>
+
+        <Modal open={modalOpen} onClose={closeDeleteModal} aria-labelledby="modal-title">
+          <Box sx={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            backgroundColor: '#2c353d', padding: 3, borderRadius: 2, width: 300
+          }}>
+            <Typography variant="h6" color="white" mb={2} id="modal-title">
+              Are you sure you want to delete this task?
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button onClick={closeDeleteModal} sx={{ color: '#fff' }}>Cancel</Button>
+              <Button onClick={confirmDeleteTask} sx={{ color: '#FF5252' }}>Delete</Button>
+            </Box>
+          </Box>
+        </Modal>
+
+        {/* Snackbar for alerts */}
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseAlert}
+          message={alertMessage}
+          sx={{ backgroundColor: '#FF5252', color: '#fff' }}
+        />
+      </Box>
     </Box>
   );
 }

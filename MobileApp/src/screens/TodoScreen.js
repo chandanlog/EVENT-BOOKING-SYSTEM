@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { 
-  View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet 
+  View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet, Modal 
 } from "react-native";
 
 const API_URL = "http://192.168.1.10:4000/todos"; // Replace with your API
 
-export default function HomeScreen() {
+export default function HomeScreen(navigate) {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState("");
   const [editingTask, setEditingTask] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   useEffect(() => {
     fetchTodos();
@@ -51,10 +53,21 @@ export default function HomeScreen() {
     }
   };
 
-  const deleteTask = async (id) => {
+  const openDeleteModal = (task) => {
+    setTaskToDelete(task);
+    setModalVisible(true);
+  };
+
+  const closeDeleteModal = () => {
+    setTaskToDelete(null);
+    setModalVisible(false);
+  };
+
+  const confirmDeleteTask = async () => {
     try {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      setTasks(tasks.filter((task) => task.id !== id));
+      await fetch(`${API_URL}/${taskToDelete.id}`, { method: "DELETE" });
+      setTasks(tasks.filter((task) => task.id !== taskToDelete.id));
+      closeDeleteModal();
     } catch (error) {
       Alert.alert("Error", "Failed to delete task");
     }
@@ -67,7 +80,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>✅ Todo App</Text>
+      <Text style={styles.title}>Todo App</Text>
 
       {/* Input Section */}
       <TextInput
@@ -92,13 +105,30 @@ export default function HomeScreen() {
               <TouchableOpacity onPress={() => startEditing(item)} style={styles.editButton}>
                 <Text style={styles.buttonText}>✏️</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
+              <TouchableOpacity onPress={() => openDeleteModal(item)} style={styles.deleteButton}>
                 <Text style={styles.buttonText}>🗑</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
+
+      {/* Confirmation Modal */}
+      <Modal visible={modalVisible} transparent={true} animationType="fade" onRequestClose={closeDeleteModal}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Are you sure you want to delete this task?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={closeDeleteModal} style={styles.modalButton}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={confirmDeleteTask} style={styles.modalButton}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -136,4 +166,27 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row" },
   editButton: { backgroundColor: "#1BA94C", padding: 5, borderRadius: 5, marginRight: 5 },
   deleteButton: { backgroundColor: "#FF5252", padding: 5, borderRadius: 5 },
+  
+  // Modal styles
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "#1C1F23",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 20,
+  },
+  modalButtons: { flexDirection: "row", justifyContent: "space-between", width: "100%" },
+  modalButton: { marginHorizontal: 5 },
 });
