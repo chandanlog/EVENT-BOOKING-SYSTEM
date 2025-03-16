@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Todo",
-    "slug": "Todo",
+    "name": "EventBookingSystem",
+    "slug": "EventBookingSystem",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "eventbookingsystem",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -20,6 +20,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
+      "publicPath": "/EventBookingSystem/",  
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
